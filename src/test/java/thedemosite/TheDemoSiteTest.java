@@ -7,17 +7,20 @@ import java.util.Map;
 
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chrome.ChromeOptions;
+import org.openqa.selenium.support.PageFactory;
+
+import pageobjectmodel.demosite.DemoSitePortal;
 
 public class TheDemoSiteTest {
 	private static WebDriver driver;
 	private static WebElement targ;
-	private static String URL = "https://thedemosite.co.uk/";
 
 	@BeforeClass
 	public static void setup() {
@@ -32,44 +35,20 @@ public class TheDemoSiteTest {
 
 	@Test
 	public void testLogin() {
-		// home page
-		driver.get(URL);
-		targ = driver.findElement(
-				By.xpath("/html/body/div/center/table/tbody/tr[2]/td/div/center/table/tbody/tr/td[2]/p/small/a[3]"));
-		targ.click();
-
-		// add user page
-		targ = driver.findElement(By.xpath(
-				"/html/body/table/tbody/tr/td[1]/form/div/center/table/tbody/tr/td[1]/div/center/table/tbody/tr[1]/td[2]/p/input"));
-		targ.sendKeys("jbname");
-
-		targ = driver.findElement(By.xpath(
-				"/html/body/table/tbody/tr/td[1]/form/div/center/table/tbody/tr/td[1]/div/center/table/tbody/tr[2]/td[2]/p/input"));
-		targ.sendKeys("pass");
-
-		targ = driver.findElement(By.xpath(
-				"/html/body/table/tbody/tr/td[1]/form/div/center/table/tbody/tr/td[1]/div/center/table/tbody/tr[3]/td[2]/p/input"));
-		targ.click(); // save
-
-		// login page
-		targ = driver
-				.findElement(By.xpath("/html/body/table/tbody/tr/td[1]/form/div/center/table/tbody/tr/td[2]/small/a"));
-		targ.click();
-
-		targ = driver.findElement(By.xpath(
-				"/html/body/table/tbody/tr/td[1]/form/div/center/table/tbody/tr/td[1]/table/tbody/tr[1]/td[2]/p/input"));
-		targ.sendKeys("jbname");
-
-		targ = driver.findElement(By.xpath(
-				"/html/body/table/tbody/tr/td[1]/form/div/center/table/tbody/tr/td[1]/table/tbody/tr[2]/td[2]/p/input"));
-		targ.sendKeys("pass");
-
-		targ = driver.findElement(By.xpath(
-				"/html/body/table/tbody/tr/td[1]/form/div/center/table/tbody/tr/td[1]/table/tbody/tr[3]/td[2]/p/input"));
-		targ.click();
-
-		targ = driver.findElement(By.xpath("/html/body/table/tbody/tr/td[1]/big/blockquote/blockquote/font/center/b"));
-		assertEquals("**Successful Login**", targ.getText());
+		// GIVEN - That I can access the demo site - RESOURCES
+		DemoSitePortal theDemoSite = PageFactory.initElements(driver, DemoSitePortal.class);
+		driver.get(DemoSitePortal.URL);
+		// WHEN - I navigate to the add user page - ACTION
+		theDemoSite.navAddUser();
+		// AND - I enter and submit my user credentials
+		theDemoSite.createUserPage.createUser("root", "root");
+		// AND - I navigate to the login page
+		theDemoSite.navLogin();
+		// AND - I enter and submit my credentials
+		theDemoSite.loginPage.login("root", "root");
+		// THEN - I should have successfully logged in - ASSERTION
+		String result = theDemoSite.loginPage.getStatus();
+		assertEquals("**Successful Login**", result);
 
 	}
 
@@ -84,9 +63,10 @@ public class TheDemoSiteTest {
 	// Mockito.verify();
 
 	@Test
+	@Ignore
 	public void testLoginAlt() {
 		// GIVEN - That I can access the demo site - RESOURCES
-		driver.get(URL);
+		//driver.get(URL);
 		// WHEN - I navigate to the add user page - ACTION
 		targ = driver.findElement(
 				By.xpath("/html/body/div/center/table/tbody/tr[2]/td/div/center/table/tbody/tr/td[2]/p/small/a[3]"));
@@ -99,7 +79,7 @@ public class TheDemoSiteTest {
 		targ = driver.findElement(By.xpath(
 				"/html/body/table/tbody/tr/td[1]/form/div/center/table/tbody/tr/td[1]/div/center/table/tbody/tr[2]/td[2]/p/input"));
 		targ.sendKeys("pass");
-		
+
 		targ = driver.findElement(By.xpath(
 				"/html/body/table/tbody/tr/td[1]/form/div/center/table/tbody/tr/td[1]/div/center/table/tbody/tr[3]/td[2]/p/input"));
 		targ.click();
